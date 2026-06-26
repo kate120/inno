@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: app
+    ports:
+      - "5000:5000"
+
+  db:
+    image: postgres:14-alpine
+    container_name: bd
+    ports:
+      - "5432:5432"
+    environment:
+    - POSTGRES_PASSWORD=secret
