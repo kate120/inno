@@ -1,0 +1,19 @@
+name: code check
+on:
+  pull_request: 
+    branches: [main] 
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: module-07
+    steps:
+      - name: checkout 
+        uses: actions/checkout@v4
+      - name: setups
+        uses: actions/setup-python@v5
+      - name: install dependencies
+        run: pip install -r requirements.txt
+      - name: run tests
+        run: pytest
