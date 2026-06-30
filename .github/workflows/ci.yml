@@ -1,4 +1,4 @@
-name: code check
+name: CI 
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: module-07
+        working-directory: module-08
 
     steps:
       - name: checkout
@@ -26,3 +26,5 @@ jobs:
 
       - name: run tests
         run: pytest tests/ -v  
+
+  
