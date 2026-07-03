@@ -3,27 +3,26 @@ name: CD
 on:
   push:
     branches: [main]
+    paths:
+      - 'module-07/**'
+      - 'module-08/**'
+      - '.github/workflows/cd.yml'
 
 jobs:
   build-push:
     runs-on: ubuntu-latest
-
     steps:
       - name: checkout
         uses: actions/checkout@v4
-
       - name: Use qemu
         uses: docker/setup-qemu-action@v3
-
       - name: Use buildx
         uses: docker/setup-buildx-action@v3
-
       - name: Login to Docker hub
         uses: docker/login-action@v3
-        with: 
+        with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
