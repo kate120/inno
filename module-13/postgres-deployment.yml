@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      postgres: my-bd
+  template:
+    metadata:
+      labels:
+        postgres: my-bd
+    spec:
+      containers:
+        - name: my-bd
+          image: postgres:14-alpine
+          envFrom:
+            - configMapRef:
+                name: postgres-configmap
+            - secretRef:
+                name: postgres-secret
+          volumeMounts:
+            - name: pg-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: pg-data
+          persistentVolumeClaim:
+            claimName: postgres-pvc
