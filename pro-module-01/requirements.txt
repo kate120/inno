@@ -1,0 +1,1 @@
+git+https://${GITHUB_TOKEN}@github.com/kate120/my-private-package.git

@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    volumes:
+      - .:/go/src/app
+    container_name: my-app-dev
+    environment:
+      - ENVIRONMENT=development
