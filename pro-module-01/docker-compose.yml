@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  app:
+    image: my-app:v1
+    container_name: my-app-prod
+    restart: unless-stopped
+    environment:
+      - ENVIRONMENT=production
