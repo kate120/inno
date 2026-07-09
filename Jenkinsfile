@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "kate120/my-app-jenkins"
+        IMAGE_NAME = "kiwwa/my-app-jenkins"
         IMAGE_TAG  = "${env.BUILD_NUMBER}"
     }
 
