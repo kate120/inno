@@ -3,24 +3,32 @@ pipeline {
 
     stages {
 
-        stage('Setup Python') {
+        stage('Check branch') {
             steps {
-                dir('module-08') {
-                    sh '''
-                        python3 -m venv venv
-                        venv/bin/pip install --no-cache-dir -r requirements.txt
-                    '''
+                script {
+                    def branch = env.BRANCH_NAME
+                    echo "this branch is ${branch}"
                 }
             }
         }
 
-        stage('Test') {
+        stage('chec files') {
             steps {
-                dir('module-08') {
-                    sh 'venv/bin/pytest tests/ -v'
-                }
+                echo "files in the branch"
+                sh "ls"
+            }
+        }
+
+        stage('PR') {
+            when {
+                expression { env.CHANGE_ID != null }  // Только для PR
+            }
+            steps {
+                echo "PR has been checked"
             }
         }
 
     }
+
+
 }
