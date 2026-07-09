@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = "kate120/my-app-jenkins"
-        IMAGE_TAG  = "${env.BUILD_NUMBER}"
-    }
-
     stages {
 
         stage('Check branch') {
@@ -24,33 +19,9 @@ pipeline {
             }
         }
 
-        stage('Build Image') {
-            steps {
-                dir('module-08') {
-                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
-                }
-            }
-        }
-
-        stage('Push to Docker Hub') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKER_USERNAME',
-                    passwordVariable: 'DOCKER_PASSWORD'
-                )]) {
-                    sh '''
-                        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
-                        docker logout
-                    '''
-                }
-            }
-        }
-
         stage('PR') {
             when {
-                expression { env.CHANGE_ID != null }
+                expression { env.CHANGE_ID != null }  // Только для PR
             }
             steps {
                 echo "PR has been checked"
@@ -58,4 +29,6 @@ pipeline {
         }
 
     }
+
+
 }
