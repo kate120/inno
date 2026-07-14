@@ -1,0 +1,17 @@
+stages:
+  - build
+
+variables:
+  CI_REGISTRY: "http://gitlab:5050"
+  CI_REGISTRY_IMAGE: "$CI_REGISTRY/root/inno"
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: "tcp://docker:2375"
+
+build-image:
+  stage: build
+  image: docker:latest
+  script:
+    - cd module-08
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
