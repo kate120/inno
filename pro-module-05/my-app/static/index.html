@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Добавить пользователя и книгу</title>
+  <style>
+    body {
+      background-color: #ffffff;
+      font-family: sans-serif;
+      max-width: 400px;
+      margin: 60px auto;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Добавить запись</h2>
+
+  <label for="user">Пользователь</label>
+  <input type="text" id="user" placeholder="Введите имя пользователя">
+
+  <label for="book">Книга</label>
+  <input type="text" id="book" placeholder="Введите название книги">
+
+  <button onclick="saveData()">Сохранить</button>
+
+  <div id="result"></div>
+
+  <script>
+    async function saveData() {
+      const user = document.getElementById('user').value;
+      const book = document.getElementById('book').value;
+      const resultDiv = document.getElementById('result');
+
+      if (!user || !book) {
+        resultDiv.textContent = 'Заполните оба поля!';
+        resultDiv.style.color = 'red';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user: user, book: book })
+        });
+
+        if (response.ok) {
+          resultDiv.textContent = 'Успешно сохранено!';
+          resultDiv.style.color = 'green';
+          document.getElementById('user').value = '';
+          document.getElementById('book').value = '';
+        } else {
+          resultDiv.textContent = 'Ошибка при сохранении';
+          resultDiv.style.color = 'red';
+        }
+      } catch (err) {
+        resultDiv.textContent = 'Не удалось подключиться к серверу';
+        resultDiv.style.color = 'red';
+      }
+    }
+  </script>
+
+</body>
+
+</html>

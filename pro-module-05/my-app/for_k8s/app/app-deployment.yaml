@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: C:\Users\katar\Desktop\СТАЖИРОВКА\devops_tr\pro-module-05\my-app\book-service\kompose.exe convert -f docker-compose.yml
+    kompose.version: 1.38.0 (a8f5d1cbd)
+  labels:
+    app: my-app
+    io.kompose.service: app
+  name: app
+spec:
+  replicas:
+  selector:
+    matchLabels:
+      io.kompose.service: app
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: C:\Users\katar\Desktop\СТАЖИРОВКА\devops_tr\pro-module-05\my-app\book-service\kompose.exe convert -f docker-compose.yml
+        kompose.version: 1.38.0 (a8f5d1cbd)
+      labels:
+        app: my-app
+        io.kompose.service: app
+    spec:
+      containers:
+        - env:
+            - name: BOOK_SERVICE_URL
+              value: http://book-service:8082/api/books
+            - name: USER_SERVICE_URL
+              value: http://user-service:8081/api/users
+          image: my-app-white:latest
+          imagePullPolicy: IfNotPresent
+          name: my-app
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: Always

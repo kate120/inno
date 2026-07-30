@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: C:\Users\katar\Desktop\СТАЖИРОВКА\devops_tr\pro-module-05\my-app\book-service\kompose.exe convert -f docker-compose.yml
+    kompose.version: 1.38.0 (a8f5d1cbd)
+  labels:
+    io.kompose.service: mysql-books
+  name: mysql-books
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: mysql-books
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: C:\Users\katar\Desktop\СТАЖИРОВКА\devops_tr\pro-module-05\my-app\book-service\kompose.exe convert -f docker-compose.yml
+        kompose.version: 1.38.0 (a8f5d1cbd)
+      labels:
+        io.kompose.service: mysql-books
+    spec:
+      containers:
+        - env:
+            - name: MYSQL_DATABASE
+              value: books_db
+            - name: MYSQL_ROOT_PASSWORD
+              value: password
+          image: mysql:8.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            exec:
+              command:
+                - mysqladmin
+                - ping
+                - -h
+                - localhost
+            failureThreshold: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          name: mysql-books
+          ports:
+            - containerPort: 3306
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-books-data
+      restartPolicy: Always
+      volumes:
+        - name: mysql-books-data
+          persistentVolumeClaim:
+            claimName: mysql-books-data
