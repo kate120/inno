@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-red
+  labels:
+    app: my-app
+    o.kompose.service: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+      o.kompose.service: app
+  template:
+    metadata:
+      labels:
+        app: my-app
+        o.kompose.service: app
+    spec:
+      containers:
+        - name: my-app
+          image: my-app-app:latest
+          imagePullPolicy: IfNotPresent # Тот же образ, что и у белого пода
+          ports:
+            - containerPort: 8080
+          env:
+            - name: COLOR
+              value: "red"
+            - name: BOOK_SERVICE_URL
+              value: http://book-service:8082/api/books
+            - name: USER_SERVICE_URL
+              value: http://user-service:8081/api/users
+          volumeMounts:
+            - name: html-volume
+              mountPath: /app/static/index.html
+              subPath: index.html
+      volumes:
+        - name: html-volume
+          configMap:
+            name: html-red

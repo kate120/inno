@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  mysql-users:
+    image: mysql:8.0
+    container_name: mysql-users
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: users_db
+    ports:
+      - "3308:3306"          
+    volumes:
+      - mysql-users-data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-books:
+    image: mysql:8.0
+    container_name: mysql-books
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: books_db
+    ports:
+      - "3307:3306"          
+    volumes:
+      - mysql-books-data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: user-service
+    environment:
+      - DB_DSN=root:password@tcp(mysql-users:3306)/users_db?charset=utf8&parseTime=True&loc=Local
+    ports:
+      - "8081:8080"
+    depends_on:
+      mysql-users:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  book-service:
+    build:
+      context: ./book-service
+      dockerfile: Dockerfile
+    container_name: book-service
+    environment:
+      - DB_DSN=root:password@tcp(mysql-books:3306)/books_db?charset=utf8&parseTime=True&loc=Local
+    ports:
+      - "8082:8080"
+    depends_on:
+      mysql-books:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-app
+    ports:
+      - "8080:8080"
+    environment:
+      - USER_SERVICE_URL=http://user-service:8080/api/users
+      - BOOK_SERVICE_URL=http://book-service:8080/api/books
+    depends_on:
+      - user-service
+      - book-service
+    networks:
+      - app-network
+
+
+volumes:
+  mysql-users-data:
+  mysql-books-data:
+
+networks:
+  app-network:
+    driver: bridge
