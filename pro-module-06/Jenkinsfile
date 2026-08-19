@@ -1,0 +1,29 @@
+pipeline {
+    agent {
+        docker {
+            image 'lachlanevenson/k8s-kubectl:v1.25.0'
+        }
+    }
+    
+    stages {
+        stage('Check kubectl') {
+            steps {
+                sh 'kubectl version --client'
+            }
+        }
+        
+        stage('Check cluster') {
+            steps {
+                sh 'kubectl get nodes'
+                sh 'kubectl get pods'
+            }
+        }
+        
+        stage('Deploy app') {
+            steps {
+                sh 'kubectl apply -f deployment.yaml'
+                sh 'kubectl rollout status deployment/my-app'
+            }
+        }
+    }
+}
